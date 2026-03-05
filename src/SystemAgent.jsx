@@ -18,13 +18,13 @@ function FontLoader() {
 // ═══════════════════════════════════════════════════
 async function ai(system, user, maxTokens = 1000) {
   try {
-    const res = await fetch("/api/ai", {
+    const res = await fetch("https://hook.eu2.make.com/qqm48fwhzdkpuwcvzbkigxqjuvh96vft", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ system, user, maxTokens }),
     });
     const data = await res.json();
-    return data.text || data.error || "Error en la respuesta de IA.";
+    return data.choices?.[0]?.message?.content || data.text || data.output || JSON.stringify(data);
   } catch (e) {
     return "⚠ Error de conexión: " + e.message;
   }
@@ -32,13 +32,13 @@ async function ai(system, user, maxTokens = 1000) {
 
 async function scrapeUrl(url) {
   try {
-    const res = await fetch("/api/scrape", {
+    const res = await fetch("https://hook.eu2.make.com/egnx19l8asmsjyt0gl3a3u3zr4lcuos9", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url })
     });
     const data = await res.json();
-    return data.content || null;
+    return data.content || data.text || data.output || null;
   } catch {
     return null;
   }

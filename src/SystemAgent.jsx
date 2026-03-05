@@ -18,18 +18,18 @@ function FontLoader() {
 // ═══════════════════════════════════════════════════
 async function ai(system, user, maxTokens = 1000) {
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch("https://hook.eu2.make.com/qqm48fwhzdkpuwcvzbkigxqjuvh96vft", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: maxTokens,
-        system,
-        messages: [{ role: "user", content: user }],
-      }),
+      body: JSON.stringify({ system, user, maxTokens }),
     });
-    const data = await res.json();
-    return data.content?.[0]?.text || "Error en la respuesta de IA.";
+    const text = await res.text();
+    try {
+      const data = JSON.parse(text);
+      return data.text || data.content || data.output || data.message || text;
+    } catch {
+      return text || "Error en la respuesta de IA.";
+    }
   } catch (e) {
     return "⚠ Error de conexión: " + e.message;
   }
@@ -38,11 +38,19 @@ async function ai(system, user, maxTokens = 1000) {
 async function scrapeUrl(url) {
   try {
     const clean = url.startsWith("http") ? url : "https://" + url;
-    const encoded = encodeURIComponent(clean);
-    const res = await fetch(`https://api.allorigins.win/get?url=${encoded}`);
-    const data = await res.json();
-    return data.contents ? data.contents.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 4000) : null;
-  } catch {
+    const res = await fetch("https://hook.eu2.make.com/egnx19l8asmsjyt0gl3a3u3zr4lcuos9", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: clean })
+    });
+    const text = await res.text();
+    try {
+      const data = JSON.parse(text);
+      return data.content || data.text || data.data || text.slice(0, 4000);
+    } catch {
+      return text.slice(0, 4000);
+    }
+  } catch (e) {
     return null;
   }
 }

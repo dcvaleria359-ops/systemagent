@@ -1,20 +1,18 @@
-export const config = { runtime: 'edge' };
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
-export default async function handler(req) {
-  const { url } = await req.json();
+  const { url } = req.body;
   try {
     const clean = url.startsWith("http") ? url : "https://" + url;
-    const res = await fetch(`https://r.jina.ai/${clean}`, {
+    const response = await fetch(`https://r.jina.ai/${clean}`, {
       headers: { Accept: "text/plain" }
     });
-    const text = await res.text();
-    return new Response(JSON.stringify({ content: text.slice(0, 4000) }), {
-      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
-    });
+    const text = await response.text();
+    return res.status(200).json({ content: text.slice(0, 4000) });
   } catch (e) {
-    return new Response(JSON.stringify({ error: e.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" }
-    });
+    return res.status(500).json({ error: e.message });
   }
 }

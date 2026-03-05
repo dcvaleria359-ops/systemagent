@@ -37,10 +37,13 @@ async function ai(system, user, maxTokens = 1000) {
 
 async function scrapeUrl(url) {
   try {
-    const clean = url.startsWith("http") ? url : "https://" + url;
-    const res = await fetch(`https://r.jina.ai/${clean}`, { headers: { Accept: "text/plain" } });
-    const text = await res.text();
-    return text.slice(0, 4000);
+    const res = await fetch("/api/scrape", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url })
+    });
+    const data = await res.json();
+    return data.content || null;
   } catch {
     return null;
   }

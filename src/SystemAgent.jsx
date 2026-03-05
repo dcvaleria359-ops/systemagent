@@ -18,7 +18,7 @@ function FontLoader() {
 // ═══════════════════════════════════════════════════
 async function ai(system, user, maxTokens = 1000) {
   try {
-    const res = await fetch("https://hook.eu2.make.com/qqm48fwhzdkpuwcvzbkigxqjuvh96vft", {
+   const res = await fetch("/api/ai", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ system, user, maxTokens }),
